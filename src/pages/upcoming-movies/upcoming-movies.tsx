@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import Slider from '../../components/slider/slider';
 import FilterGenre from '../../components/filter/filter-genre';
-// import {
-//   useFetchUpcomingDataQuery,
-//   useFetchVideosQuery
-// } from '../../store/fetchDataSlice';
+
+import {
+  useGetUpcomingMoviesDataQuery,
+  useGetVideosQuery
+} from '../../redux/reducers/api';
 import {
   UpcomingMovies,
   formatFullDate,
@@ -13,12 +14,12 @@ import {
 } from '../../models';
 import './upcoming-movie.scss';
 
-// import { useDispatch, useSelector } from 'react-redux';
-// import {
-//   WatchlistItem,
-//   addToWatchlist,
-//   selectWatchlistItems
-// } from '../../store/watchlistSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  WatchlistItem,
+  addWatchList,
+  selectWatchlistItems
+} from '../../redux/reducers/slices/watch-list';
 import videoPlay from '../../assets/video-play.png';
 import addIcon from '../../assets/add.png';
 import count from '../../assets/vote-count.png';
@@ -27,7 +28,6 @@ import star from '../../assets/star.png';
 import calendar from '../../assets/calendar.png';
 import Button from '../../components/button/button';
 import VideoModal from '../../components/video-modal/video-modal';
-import { useGetUpcomingMoviesDataQuery } from 'src/redux';
 
 const UpcomingMovie = () => {
   const {
@@ -35,8 +35,7 @@ const UpcomingMovie = () => {
     isLoading,
     isError
   } = useGetUpcomingMoviesDataQuery();
-  // const dispatch = useDispatch();
-
+  const dispatch = useDispatch();
   const [windowResize, setWindowResize] = useState<number>(window.innerWidth);
   const videoModalRef = useRef<HTMLDivElement | null>(null);
   const [isVideoVisible, setIsVideoVisible] = useState(false);
@@ -48,17 +47,13 @@ const UpcomingMovie = () => {
   );
   const [isGrid, setIsGrid] = useState(false);
 
-  // const watchlistItems: WatchlistItem[] = useSelector(selectWatchlistItems);
-  const watchlistItems = [];
+  const watchlistItems: WatchlistItem[] = useSelector(selectWatchlistItems);
 
-  // const watchlistTotalItems = useSelector(
-  //   (state: { watchlist: { totalItems: number } }) => state.watchlist.totalItems
-  // );
+  const watchlistTotalItems = useSelector(
+    (state: { watchList: { totalItems: number } }) => state.watchList.totalItems
+  );
 
-  const watchlistTotalItems = 0;
-
-  // const { data: videoData } = useFetchVideosQuery(selectedItem?.id || 0);
-  const videoData = null;
+  const { data: videoData } = useGetVideosQuery(selectedItem?.id || 0);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -152,11 +147,11 @@ const UpcomingMovie = () => {
 
   const handleAddToWL = (movie: UpcomingMovies) => {
     setIsInWatchlist(!isInWatchlist);
-    // dispatch(
-    //   addToWatchlist({
-    //     ...movie
-    //   })
-    // );
+    dispatch(
+      addWatchList({
+        ...movie
+      })
+    );
   };
 
   const handleWatchTrailer = () => {

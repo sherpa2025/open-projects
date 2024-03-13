@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
 // FIX
-import Slider from '../../components/Slider/Slider';
+import Slider from '../../components/slider/slider';
 // FIX
 import {
-  useFetchPopularMovieDataQuery,
-  useFetchVideosQuery
-} from '../../store/fetchDataSlice';
+  useGetPopulaMovieDataQuery,
+  useGetVideosQuery
+} from '../../redux/reducers/api';
 import { Movie, formatFullDate, formatYear, genreIdToName } from '../../models';
 import './pop-movie-list.scss';
 // FIX
-import Button from '../../components/UI/Button';
+import Button from '../../components/button/button';
 // FIX
-import VideoModal from '../../components/UI/VideoModal';
+import VideoModal from '../../components/video-modal/video-modal';
 import { useDispatch, useSelector } from 'react-redux';
 // FIX
 import {
   WatchlistItem,
-  addToWatchlist,
+  addWatchList,
   selectWatchlistItems
-} from '../../store/watchlistSlice';
+} from '../../redux/reducers/slices/watch-list';
 import videoPlay from '../../assets/video-play.png';
 import addIcon from '../../assets/add.png';
 import count from '../../assets/vote-count.png';
@@ -26,14 +26,10 @@ import genre from '../../assets/genre.png';
 import star from '../../assets/star.png';
 import calendar from '../../assets/calendar.png';
 // FIX
-import FilterGenre from '../../components/Filter/FilterGenre';
+import FilterGenre from '../../components/filter/filter-genre';
 
 const PopMovieList = () => {
-  const {
-    data: movieData,
-    isLoading,
-    isError
-  } = useFetchPopularMovieDataQuery();
+  const { data: movieData, isLoading, isError } = useGetPopulaMovieDataQuery();
   const dispatch = useDispatch();
   const [isVideoVisible, setIsVideoVisible] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
@@ -45,13 +41,14 @@ const PopMovieList = () => {
   const [isGrid, setIsGrid] = useState(false);
   const [windowResize, setWindowResize] = useState<number>(window.innerWidth);
 
-  const { data: videoData } = useFetchVideosQuery(selectedItem?.id || 0);
+  const { data: videoData } = useGetVideosQuery(selectedItem?.id || 0);
 
   const videoModalRef = useRef<HTMLDivElement | null>(null);
+
   const watchlistItems: WatchlistItem[] = useSelector(selectWatchlistItems);
 
   const watchlistTotalItems = useSelector(
-    (state: { watchlist: { totalItems: number } }) => state.watchlist.totalItems
+    (state: { watchList: { totalItems: number } }) => state.watchList.totalItems
   );
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -130,7 +127,7 @@ const PopMovieList = () => {
   const handleAddToWL = (movie: Movie) => {
     setIsInWatchlist(!isInWatchlist);
     dispatch(
-      addToWatchlist({
+      addWatchList({
         ...movie
       })
     );

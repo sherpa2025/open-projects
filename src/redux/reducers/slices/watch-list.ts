@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { WatchListItem } from 'src/models';
+import { Movie, TVShow, UpcomingMovies, WatchListItem } from 'src/models';
+
+export type WatchlistItem = Movie | TVShow | UpcomingMovies;
 
 interface InitialState {
   items: WatchListItem[];
@@ -35,5 +37,9 @@ export const watchListSlice = createSlice({
     }
   }
 });
+
+export const selectWatchlistItems = (state: {
+  watchList: { items: WatchlistItem[] };
+}) => state.watchList.items;
 
 export const { addWatchList, removeWatchList } = watchListSlice.actions;
